@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
+import { track } from "@/lib/track";
 
 const PERSONAS = [
   { key: "self", emoji: "🪞", label: "蒸自己", desc: "全维度数字分身" },
@@ -13,6 +15,7 @@ const PERSONAS = [
 ];
 
 export default function Home() {
+  useEffect(() => { track("page_view", { page: "/" }); }, []);
   return (
     <main className="min-h-screen">
       {/* Hero */}
@@ -65,7 +68,7 @@ export default function Home() {
           {[
             { n: "01", title: "上传聊天记录", desc: "微信、飞书、iMessage……粘贴或上传 txt 文件", color: "from-[#6c5ce7]/5 to-[#6c5ce7]/10", accent: "#6c5ce7" },
             { n: "02", title: "七维 AI 蒸馏", desc: "说话方式 · 性格锚点 · 反面校准 · 记忆 · 立场 · 情感 · 做事方式", color: "from-[#e17055]/5 to-[#e17055]/10", accent: "#e17055" },
-            { n: "03", title: "对话 & 分享", desc: "在线聊天，或下载 Skill 文件丢给豆包 / Kimi / ChatGPT", color: "from-[#6c5ce7]/5 to-[#e17055]/10", accent: "#6c5ce7" },
+            { n: "03", title: "复制指令 & 分享", desc: "一键复制完整人格指令，粘贴给豆包 / Kimi / ChatGPT 直接用", color: "from-[#6c5ce7]/5 to-[#e17055]/10", accent: "#6c5ce7" },
           ].map((s) => (
             <div key={s.n} className={`card-lift rounded-2xl bg-gradient-to-br ${s.color} border border-[#e8e4df] p-6`}>
               <div className="text-xs font-bold tracking-widest mb-4" style={{ color: s.accent }}>{s.n}</div>
@@ -108,8 +111,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Persona selector */}
+      {/* One-line command highlight */}
       <section className="max-w-3xl mx-auto px-6 py-20">
+        <div className="rounded-2xl border border-[#e17055]/20 bg-[#e17055]/5 p-8 sm:p-10">
+          <div className="flex items-start gap-4 sm:gap-6">
+            <div className="shrink-0 w-12 h-12 rounded-xl bg-[#e17055] flex items-center justify-center text-white text-xl">📋</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-[#1a1a1a] mb-2">一行指令，发给别人直接用</h3>
+              <p className="text-sm text-[#8c8578] mb-4">蒸馏完成后，点击「复制指令」按钮，完整人格数据 + 使用指令一键复制。发给朋友，TA 粘贴给任何 AI 就能直接对话。</p>
+              <div className="rounded-xl bg-white border border-[#e8e4df] p-4 font-mono text-xs text-[#6b6560] leading-relaxed">
+                <span className="text-[#e17055] font-semibold">📋 复制指令</span>
+                <span className="text-[#c4beb6] mx-2">→</span>
+                粘贴给豆包 / Kimi / ChatGPT / Claude
+                <span className="text-[#c4beb6] mx-2">→</span>
+                <span className="text-[#6c5ce7] font-semibold">直接对话</span>
+              </div>
+              <p className="text-xs text-[#b5afa7] mt-3">无需下载文件、无需懂技术，一键搞定。也可以下载 .md 文件永久保存。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Persona selector */}
+      <section className="max-w-3xl mx-auto px-6 pt-0 pb-20">
         <h2 className="text-center text-2xl font-bold text-[#1a1a1a] mb-3">你想蒸谁？</h2>
         <p className="text-center text-sm text-[#8c8578] mb-10">选一个角色类型，AI 会针对性地蒸馏不同维度</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

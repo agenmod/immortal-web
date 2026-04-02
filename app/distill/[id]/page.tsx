@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { addHistory } from "@/lib/history";
+import { track } from "@/lib/track";
 
 interface SessionData {
   id: string;
@@ -44,6 +45,7 @@ export default function DistillPage({ params }: { params: Promise<{ id: string }
           setCurrentStage(STAGES.length);
           clearInterval(stageTimer);
           addHistory({ id, name: data.name, persona: data.persona, createdAt: Date.now() });
+          track("distill_done", { persona: data.persona, meta: { name: data.name } });
           setTimeout(() => { if (!cancelled) router.push(`/chat/${id}`); }, 1200);
         } else if (data.status === "error") {
           setError(data.error || "蒸馏失败");

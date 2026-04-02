@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback, use } from "react";
 import Link from "next/link";
 import { addHistory, buildPersonaFile } from "@/lib/history";
+import { track } from "@/lib/track";
 
 interface Message { role: "user" | "assistant"; content: string; }
 interface SessionInfo { name: string; persona: string; description: string; distillResult: string; }
@@ -41,7 +42,8 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = `${sessionInfo.name}的数字分身.md`; a.click();
     URL.revokeObjectURL(url);
-  }, [sessionInfo]);
+    track("download_md", { page: `/chat/${id}` });
+  }, [sessionInfo, id]);
 
   const handleCopySkillLink = useCallback(() => {
     navigator.clipboard.writeText(`${window.location.origin}/skill/${id}`).then(() => {
@@ -54,12 +56,14 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     const personaFile = buildPersonaFile(sessionInfo.name, sessionInfo.persona, sessionInfo.description, sessionInfo.distillResult);
     const cmd = `请按以下人格设定跟我对话，你就是${sessionInfo.name}。以下是完整人格数据：\n\n${personaFile}`;
     navigator.clipboard.writeText(cmd).then(() => { setCmdCopied(true); setTimeout(() => setCmdCopied(false), 2000); });
-  }, [sessionInfo]);
+    track("copy_cmd", { page: `/chat/${id}` });
+  }, [sessionInfo, id]);
 
   const handleSend = async () => {
     const text = input.trim();
     if (!text || loading) return;
     const userMsg: Message = { role: "user", content: text };
+    track("chat_send", { page: `/chat/${id}` });
     setMessages((prev) => [...prev, userMsg]);
     setInput(""); setLoading(true);
     setMessages((prev) => [...prev, { role: "assistant", content: "" }]);

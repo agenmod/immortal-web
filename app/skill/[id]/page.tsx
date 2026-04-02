@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, use } from "react";
 import Link from "next/link";
 import { buildPersonaFile } from "@/lib/history";
+import { track } from "@/lib/track";
 
 interface SessionData { name: string; persona: string; description: string; distillResult: string; status: string; }
 
@@ -14,6 +15,7 @@ export default function SkillPage({ params }: { params: Promise<{ id: string }> 
   const [cmdCopied, setCmdCopied] = useState(false);
 
   useEffect(() => {
+    track("page_view", { page: `/skill/${id}` });
     fetch(`/api/distill?id=${id}`)
       .then((r) => r.json())
       .then((d) => { if (d.status !== "done") { setError("蒸馏尚未完成或已过期"); return; } setData(d); })
@@ -24,7 +26,8 @@ export default function SkillPage({ params }: { params: Promise<{ id: string }> 
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(fullText).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2500); });
-  }, [fullText]);
+    track("copy_cmd", { page: `/skill/${id}` });
+  }, [fullText, id]);
 
   const handleDownload = useCallback(() => {
     if (!data) return;

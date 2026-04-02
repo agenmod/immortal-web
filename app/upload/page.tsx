@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback, Suspense } from "react";
+import { useState, useRef, useCallback, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { track } from "@/lib/track";
 
 const PERSONAS = [
   { key: "self", emoji: "🪞", label: "自己" },
@@ -27,6 +28,7 @@ function UploadPageInner() {
   const searchParams = useSearchParams();
   const initialPersona = searchParams.get("persona") || "self";
 
+  useEffect(() => { track("page_view", { page: "/upload" }); }, []);
   const [persona, setPersona] = useState(initialPersona);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -59,6 +61,7 @@ function UploadPageInner() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "蒸馏启动失败");
+      track("distill_start", { persona, meta: { name } });
       router.push(`/distill/${data.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "出错了");
