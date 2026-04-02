@@ -4,13 +4,7 @@ import { useState, useEffect, useCallback, use } from "react";
 import Link from "next/link";
 import { buildPersonaFile } from "@/lib/history";
 
-interface SessionData {
-  name: string;
-  persona: string;
-  description: string;
-  distillResult: string;
-  status: string;
-}
+interface SessionData { name: string; persona: string; description: string; distillResult: string; status: string; }
 
 export default function SkillPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -21,122 +15,99 @@ export default function SkillPage({ params }: { params: Promise<{ id: string }> 
   useEffect(() => {
     fetch(`/api/distill?id=${id}`)
       .then((r) => r.json())
-      .then((d) => {
-        if (d.status !== "done") { setError("蒸馏尚未完成或已过期"); return; }
-        setData(d);
-      })
+      .then((d) => { if (d.status !== "done") { setError("蒸馏尚未完成或已过期"); return; } setData(d); })
       .catch(() => setError("加载失败"));
   }, [id]);
 
-  const fullText = data
-    ? buildPersonaFile(data.name, data.persona, data.description, data.distillResult)
-    : "";
+  const fullText = data ? buildPersonaFile(data.name, data.persona, data.description, data.distillResult) : "";
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(fullText).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    });
+    navigator.clipboard.writeText(fullText).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2500); });
   }, [fullText]);
 
   const handleDownload = useCallback(() => {
     if (!data) return;
     const blob = new Blob([fullText], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${data.name}的数字分身.md`;
-    a.click();
+    const a = document.createElement("a"); a.href = url; a.download = `${data.name}的数字分身.md`; a.click();
     URL.revokeObjectURL(url);
   }, [data, fullText]);
 
   if (error) {
     return (
-      <main className="flex flex-col items-center justify-center min-h-screen px-5">
-        <p className="text-red-400 text-sm mb-3">{error}</p>
-        <Link href="/" className="text-xs text-primary underline">去首页蒸馏一个</Link>
+      <main className="flex flex-col items-center justify-center min-h-screen px-6">
+        <p className="text-red-500 text-sm mb-3">{error}</p>
+        <Link href="/" className="text-sm text-[#6c5ce7] underline">去首页蒸馏一个</Link>
       </main>
     );
   }
 
   if (!data) {
-    return (
-      <main className="flex items-center justify-center min-h-screen">
-        <p className="text-sm text-muted-foreground animate-pulse">加载中…</p>
-      </main>
-    );
+    return <main className="flex items-center justify-center min-h-screen"><p className="text-sm text-[#8c8578] animate-pulse">加载中…</p></main>;
   }
 
   return (
-    <main className="flex flex-col items-center min-h-screen">
-      <div className="w-full max-w-2xl mx-auto px-5 py-10">
-        <Link href="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-          ← 永生.skill
+    <main className="min-h-screen">
+      <div className="max-w-2xl mx-auto px-6 py-10">
+        <Link href="/" className="inline-flex items-center gap-1 text-sm text-[#8c8578] hover:text-[#6b6560] transition-colors mb-6">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          永生.skill
         </Link>
 
-        <div className="mt-6 mb-6">
-          <h1 className="text-2xl font-black">
-            <span className="gradient-text">{data.name}</span>
-            <span className="text-muted-foreground font-normal text-base ml-2">的数字分身</span>
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1.5">
-            由 永生.skill 蒸馏生成 · 可直接导入任何 AI 使用
-          </p>
-        </div>
+        <div className="bg-white rounded-2xl border border-[#e8e4df] shadow-sm overflow-hidden">
+          {/* Header */}
+          <div className="p-6 border-b border-[#e8e4df]">
+            <div className="flex items-start justify-between">
+              <div>
+                <h1 className="text-2xl font-bold">
+                  <span className="gradient-text">{data.name}</span>
+                  <span className="text-[#8c8578] font-normal text-base ml-2">的数字分身</span>
+                </h1>
+                <p className="text-xs text-[#b5afa7] mt-1">由 永生.skill 蒸馏生成 · 可导入任何 AI 使用</p>
+              </div>
+              <Link href={`/chat/${id}`}
+                className="btn-primary shrink-0 px-4 py-2 text-sm">
+                在线对话 →
+              </Link>
+            </div>
 
-        {/* Actions */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          <button
-            onClick={handleCopy}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium
-                       hover:opacity-90 transition-opacity"
-          >
-            {copied ? "已复制到剪贴板 ✓" : "复制全部内容"}
-          </button>
-          <button
-            onClick={handleDownload}
-            className="px-4 py-2 rounded-lg bg-card border border-border text-sm
-                       hover:border-primary/30 transition-colors"
-          >
-            下载 .md 文件
-          </button>
-          <Link
-            href={`/chat/${id}`}
-            className="px-4 py-2 rounded-lg bg-card border border-border text-sm
-                       hover:border-accent/30 transition-colors"
-          >
-            在线对话 →
-          </Link>
-        </div>
-
-        {/* How to use */}
-        <div className="p-4 rounded-lg bg-card border border-border mb-6">
-          <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">怎么用</p>
-          <ol className="text-xs text-muted-foreground space-y-1.5 list-decimal list-inside">
-            <li>点击「复制全部内容」</li>
-            <li>打开你常用的 AI（豆包、Kimi、ChatGPT、Claude……）</li>
-            <li>粘贴进去，然后说：<span className="text-foreground">「请按照这个人格设定跟我对话」</span></li>
-            <li>AI 就会用 {data.name} 的方式跟你说话</li>
-          </ol>
-        </div>
-
-        {/* Preview */}
-        <div className="rounded-lg border border-border overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 bg-card border-b border-border">
-            <span className="text-xs text-muted-foreground font-mono">{data.name}的数字分身.md</span>
-            <button
-              onClick={handleCopy}
-              className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {copied ? "✓" : "复制"}
-            </button>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <button onClick={handleCopy}
+                className="btn-primary inline-flex items-center gap-1.5 px-4 py-2 text-sm">
+                {copied ? "已复制到剪贴板 ✓" : "📋 复制全部内容"}
+              </button>
+              <button onClick={handleDownload}
+                className="px-4 py-2 rounded-xl bg-[#f0eeeb] border border-[#e8e4df] text-sm font-medium text-[#6b6560] hover:bg-[#e8e4df] transition-colors">
+                ↓ 下载 .md 文件
+              </button>
+            </div>
           </div>
-          <pre className="p-4 text-xs text-muted-foreground leading-relaxed overflow-x-auto max-h-96 overflow-y-auto whitespace-pre-wrap font-mono">
-            {fullText}
-          </pre>
+
+          {/* How to use */}
+          <div className="px-6 py-4 bg-[#6c5ce7]/5 border-b border-[#6c5ce7]/10">
+            <p className="text-xs font-semibold text-[#6c5ce7] mb-2">怎么用？三步搞定</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[#6c5ce7]/80">
+              <span>① 复制上面的内容</span>
+              <span>② 粘贴给豆包 / Kimi / ChatGPT / Claude</span>
+              <span>③ 说「请按这个人格跟我对话」</span>
+            </div>
+          </div>
+
+          {/* Preview */}
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-[#b5afa7] font-mono">{data.name}的数字分身.md</span>
+              <button onClick={handleCopy} className="text-xs text-[#6c5ce7] hover:text-[#5a4dd1] font-medium transition-colors">
+                {copied ? "✓ 已复制" : "复制"}
+              </button>
+            </div>
+            <pre className="p-4 rounded-xl bg-[#faf9f7] border border-[#e8e4df] text-xs text-[#6b6560] leading-relaxed overflow-x-auto max-h-80 overflow-y-auto whitespace-pre-wrap font-mono">
+              {fullText}
+            </pre>
+          </div>
         </div>
 
-        <p className="text-[10px] text-muted-foreground/50 mt-4">
+        <p className="text-xs text-[#b5afa7] mt-4 text-center">
           此链接 7 天内有效 · 建议下载 .md 文件永久保存
         </p>
       </div>
