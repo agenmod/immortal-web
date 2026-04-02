@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect } from "react";
 import { track } from "@/lib/track";
 
@@ -26,10 +27,9 @@ export default function Home() {
             七维蒸馏 · 对齐 Soul Spec 标准
           </div>
 
-          <h1 className="anim-fade anim-d1 text-5xl sm:text-7xl font-black tracking-tight leading-[1.1]">
-            <span className="gradient-text">永生</span>
-            <span className="text-[#c4beb6] font-light">.skill</span>
-          </h1>
+          <div className="anim-fade anim-d1 flex items-center justify-center gap-3 mb-1">
+            <Image src="/logo.png" alt="永生.skill" width={240} height={80} className="h-16 sm:h-20 w-auto" priority />
+          </div>
 
           <p className="anim-fade anim-d2 mt-6 text-xl sm:text-2xl text-[#1a1a1a] font-semibold">
             把任何人从聊天记录里<span className="gradient-text font-bold">蒸馏</span>出来
@@ -182,7 +182,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-[#e8e4df] py-8 px-6">
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-[#b5afa7]">
-          <p>永生.skill — 开源数字永生蒸馏框架</p>
+          <p className="flex items-center gap-2">
+            <Image src="/icon.png" alt="" width={20} height={20} className="w-5 h-5 rounded" />
+            永生.skill — 开源数字永生蒸馏框架
+          </p>
           <div className="flex gap-5">
             <a href="https://github.com/agenmod/immortal-skill" target="_blank" rel="noopener noreferrer"
                className="hover:text-[#6b6560] transition-colors">Skill 框架</a>

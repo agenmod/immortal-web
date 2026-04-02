@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://symbiotime.com"),
   title: "永生.skill — 把任何人从聊天记录里蒸馏出来",
   description:
     "与其等着被别人蒸，不如先蒸自己。从微信、飞书、iMessage 等 12+ 平台的聊天记录中，蒸馏任何人的数字分身。",
@@ -20,6 +21,11 @@ export const metadata: Metadata = {
     title: "永生.skill — 数字永生蒸馏框架",
     description: "2026 年了，所有人都在被蒸馏。但凭什么别人来决定你被蒸成什么样？",
     type: "website",
+    images: [{ url: "/logo.png", width: 1200, height: 630 }],
+  },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
   },
 };
 
