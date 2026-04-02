@@ -1,6 +1,5 @@
 const ARK_API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
 const ARK_MODEL = "doubao-seed-1-8-251228";
-const ARK_VISION_MODEL = "doubao-vision-pro-32k";
 
 function getApiKey(): string {
   const key = process.env.ARK_API_KEY;
@@ -19,9 +18,8 @@ interface ChatMessage {
 
 export async function chatCompletion(
   messages: ChatMessage[],
-  options?: { temperature?: number; maxTokens?: number; vision?: boolean }
+  options?: { temperature?: number; maxTokens?: number }
 ): Promise<string> {
-  const model = options?.vision ? ARK_VISION_MODEL : ARK_MODEL;
 
   const res = await fetch(ARK_API_URL, {
     method: "POST",
@@ -30,7 +28,7 @@ export async function chatCompletion(
       Authorization: `Bearer ${getApiKey()}`,
     },
     body: JSON.stringify({
-      model,
+      model: ARK_MODEL,
       messages,
       temperature: options?.temperature ?? 0.7,
       max_tokens: options?.maxTokens ?? 4096,
@@ -64,7 +62,7 @@ export async function visionOCR(base64Image: string, mimeType: string): Promise<
         ],
       },
     ],
-    { temperature: 0.1, maxTokens: 4096, vision: true }
+    { temperature: 0.1, maxTokens: 4096 }
   );
   return result;
 }
