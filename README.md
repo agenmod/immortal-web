@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# immortal-web
 
-## Getting Started
+永生.skill 的 Web 版本 — 让不会编程的用户也能蒸馏数字分身。
 
-First, run the development server:
+## 功能
+
+- 上传聊天记录（粘贴文本 / 拖拽 txt 文件）
+- 选择角色类型（自己/同事/导师/亲人/前任/朋友/公众人物）
+- AI 四维蒸馏（互动风格 + 性格价值观 + 记忆经历 + 做事方式）
+- 在线与数字分身对话
+- 分享对话链接
+
+## 技术栈
+
+- Next.js 16 (App Router)
+- Tailwind CSS 4
+- DeepSeek API
+- TypeScript
+
+## 本地开发
 
 ```bash
+npm install
+cp .env.example .env.local
+# 编辑 .env.local 填入 DeepSeek API Key
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+打开 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 环境变量
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 变量 | 说明 |
+|------|------|
+| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
 
-## Learn More
+## 部署
 
-To learn more about Next.js, take a look at the following resources:
+支持部署到：
+- 腾讯云 EdgeOne Pages（国内推荐）
+- Cloudflare Pages
+- Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 关联项目
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [immortal-skill](https://github.com/agenmod/immortal-skill) — 开源蒸馏框架（CLI + OpenClaw Skill）
