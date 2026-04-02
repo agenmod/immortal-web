@@ -17,17 +17,17 @@
 }
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --primary: #22d3ee;
-  --primary-foreground: #0a0a0a;
-  --muted: #1a1a2e;
-  --muted-foreground: #888;
-  --card: #111122;
-  --card-foreground: #ededed;
-  --border: #222244;
-  --accent: #a855f7;
-  --accent-foreground: #ededed;
+  --background: #0c0c0c;
+  --foreground: #e8e4df;
+  --primary: #e05a33;
+  --primary-foreground: #faf5f0;
+  --muted: #1a1917;
+  --muted-foreground: #7a756d;
+  --card: #141312;
+  --card-foreground: #e8e4df;
+  --border: #2a2725;
+  --accent: #c9a84c;
+  --accent-foreground: #e8e4df;
 }
 
 body {
@@ -37,37 +37,39 @@ body {
 }
 
 ::selection {
-  background: rgba(34, 211, 238, 0.3);
+  background: rgba(224, 90, 51, 0.35);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.15); }
-  50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.3); }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out both;
+  animation: fadeIn 0.5s ease-out both;
 }
 
-.animate-fade-in-delay-1 { animation-delay: 0.1s; }
-.animate-fade-in-delay-2 { animation-delay: 0.2s; }
-.animate-fade-in-delay-3 { animation-delay: 0.3s; }
-.animate-fade-in-delay-4 { animation-delay: 0.4s; }
-.animate-fade-in-delay-5 { animation-delay: 0.5s; }
-.animate-fade-in-delay-6 { animation-delay: 0.6s; }
-
-.glow-card {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
+.animate-fade-in-delay-1 { animation-delay: 0.08s; }
+.animate-fade-in-delay-2 { animation-delay: 0.16s; }
+.animate-fade-in-delay-3 { animation-delay: 0.24s; }
+.animate-fade-in-delay-4 { animation-delay: 0.32s; }
+.animate-fade-in-delay-5 { animation-delay: 0.4s; }
+.animate-fade-in-delay-6 { animation-delay: 0.48s; }
 
 .gradient-text {
-  background: linear-gradient(135deg, #22d3ee, #a855f7);
+  background: linear-gradient(135deg, #e05a33 20%, #c9a84c 80%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.hero-rule {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
 }
