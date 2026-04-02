@@ -1,14 +1,40 @@
 services:
-  web:
+  blue:
     build:
       context: .
       args:
         - ARK_API_KEY=${ARK_API_KEY}
         - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL:-https://admin.symbiotime.com}
-    container_name: immortal-web
+    container_name: immortal-web-blue
     restart: unless-stopped
     ports:
       - "3002:3000"
     environment:
       - ARK_API_KEY=${ARK_API_KEY}
       - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL:-https://admin.symbiotime.com}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  green:
+    build:
+      context: .
+      args:
+        - ARK_API_KEY=${ARK_API_KEY}
+        - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL:-https://admin.symbiotime.com}
+    container_name: immortal-web-green
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      - ARK_API_KEY=${ARK_API_KEY}
+      - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL:-https://admin.symbiotime.com}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
