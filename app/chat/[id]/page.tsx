@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect, use } from "react";
+import { useState, useRef, useEffect, useCallback, use } from "react";
 import Link from "next/link";
+import { addHistory } from "@/lib/history";
+import { buildPersonaFile } from "@/lib/history";
 
 interface Message {
   role: "user" | "assistant";
@@ -12,6 +14,7 @@ interface SessionInfo {
   name: string;
   persona: string;
   description: string;
+  distillResult: string;
 }
 
 export default function ChatPage({ params }: { params: Promise<{ id: string }> }) {
@@ -22,6 +25,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -33,7 +37,18 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
           setError("蒸馏尚未完成");
           return;
         }
-        setSessionInfo({ name: data.name, persona: data.persona, description: data.description });
+        setSessionInfo({
+          name: data.name,
+          persona: data.persona,
+          description: data.description,
+          distillResult: data.distillResult,
+        });
+        addHistory({
+          id,
+          name: data.name,
+          persona: data.persona,
+          createdAt: Date.now(),
+        });
       })
       .catch(() => setError("加载失败"));
   }, [id]);
@@ -41,6 +56,23 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleDownload = useCallback(() => {
+    if (!sessionInfo) return;
+    const content = buildPersonaFile(
+      sessionInfo.name,
+      sessionInfo.persona,
+      sessionInfo.description,
+      sessionInfo.distillResult
+    );
+    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${sessionInfo.name}的数字分身.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [sessionInfo]);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -108,7 +140,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
           }
         }
       }
-    } catch (err) {
+    } catch {
       setMessages((prev) => {
         const updated = [...prev];
         updated[updated.length - 1] = {
@@ -164,14 +196,38 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             </h1>
           </div>
         </div>
-        <button
-          onClick={handleShare}
-          className="text-xs px-3 py-1 rounded-lg border border-border hover:border-primary/30
-                     text-muted-foreground hover:text-foreground transition-all"
-        >
-          {copied ? "已复制 ✓" : "分享链接"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDownload}
+            className="text-xs px-3 py-1 rounded-lg border border-primary/30 bg-primary/10
+                       text-primary hover:bg-primary/20 transition-all"
+          >
+            下载人格包
+          </button>
+          <button
+            onClick={handleShare}
+            className="text-xs px-3 py-1 rounded-lg border border-border hover:border-primary/30
+                       text-muted-foreground hover:text-foreground transition-all"
+          >
+            {copied ? "已复制 ✓" : "分享链接"}
+          </button>
+        </div>
       </header>
+
+      {/* Save banner */}
+      {showBanner && sessionInfo && (
+        <div className="flex items-center justify-between px-4 py-2 bg-accent/10 border-b border-accent/20 text-xs">
+          <span className="text-accent-foreground">
+            数据保留 7 天 · 建议<button onClick={handleDownload} className="underline text-primary mx-1">下载人格包</button>保存，可丢给豆包/Kimi/ChatGPT 继续使用
+          </span>
+          <button
+            onClick={() => setShowBanner(false)}
+            className="text-muted-foreground hover:text-foreground ml-2"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">

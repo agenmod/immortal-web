@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { addHistory } from "@/lib/history";
 
 interface SessionData {
   id: string;
@@ -49,6 +50,12 @@ export default function DistillPage({ params }: { params: Promise<{ id: string }
         if (data.status === "done") {
           setCurrentStage(STAGES.length);
           clearInterval(stageTimer);
+          addHistory({
+            id,
+            name: data.name,
+            persona: data.persona,
+            createdAt: Date.now(),
+          });
           setTimeout(() => {
             if (!cancelled) router.push(`/chat/${id}`);
           }, 1500);

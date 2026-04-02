@@ -1,4 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getHistory, HistoryEntry } from "@/lib/history";
+
+const PERSONA_EMOJI: Record<string, string> = {
+  self: "🪞",
+  colleague: "🏢",
+  mentor: "🎓",
+  family: "👴",
+  partner: "💔",
+  friend: "🍻",
+  "public-figure": "🌍",
+};
 
 const PERSONAS = [
   { key: "self", emoji: "🪞", label: "蒸自己", desc: "全维度数字分身" },
@@ -10,7 +24,24 @@ const PERSONAS = [
   { key: "public-figure", emoji: "🌍", label: "蒸名人", desc: "仅限公开资料" },
 ];
 
+function timeAgo(ts: number): string {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "刚刚";
+  if (mins < 60) return `${mins} 分钟前`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} 小时前`;
+  const days = Math.floor(hours / 24);
+  return `${days} 天前`;
+}
+
 export default function Home() {
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+  useEffect(() => {
+    setHistory(getHistory());
+  }, []);
+
   return (
     <main className="flex flex-col items-center">
       {/* Hero */}
@@ -34,6 +65,30 @@ export default function Home() {
           <p className="mt-1">但凭什么别人来决定你被蒸成什么样？</p>
         </div>
       </section>
+
+      {/* History */}
+      {history.length > 0 && (
+        <section className="w-full max-w-3xl mx-auto px-4 pb-8 animate-fade-in">
+          <h2 className="text-sm font-bold text-muted-foreground mb-3">你蒸馏过的人</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {history.map((entry) => (
+              <Link
+                key={entry.id}
+                href={`/chat/${entry.id}`}
+                className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl
+                           bg-card/50 border border-border hover:border-primary/30
+                           transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span className="text-lg">{PERSONA_EMOJI[entry.persona] || "🧬"}</span>
+                <div className="text-left">
+                  <div className="text-sm font-medium">{entry.name}</div>
+                  <div className="text-xs text-muted-foreground">{timeAgo(entry.createdAt)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* How it works */}
       <section className="w-full max-w-3xl mx-auto px-4 pb-12">
