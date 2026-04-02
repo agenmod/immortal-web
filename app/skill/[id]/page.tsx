@@ -11,6 +11,7 @@ export default function SkillPage({ params }: { params: Promise<{ id: string }> 
   const [data, setData] = useState<SessionData | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [cmdCopied, setCmdCopied] = useState(false);
 
   useEffect(() => {
     fetch(`/api/distill?id=${id}`)
@@ -83,11 +84,31 @@ export default function SkillPage({ params }: { params: Promise<{ id: string }> 
             </div>
           </div>
 
+          {/* One-line command */}
+          <div className="px-6 py-4 bg-[#e17055]/5 border-b border-[#e17055]/10">
+            <p className="text-xs font-semibold text-[#e17055] mb-2">🔥 一行指令，复制给 AI 直接用</p>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 px-3 py-2 rounded-lg bg-white border border-[#e8e4df] text-xs text-[#1a1a1a] font-mono leading-relaxed max-h-16 overflow-hidden">
+                请按以下人格设定跟我对话，你就是{data.name}：{fullText.slice(0, 80)}…
+              </div>
+              <button
+                onClick={() => {
+                  const cmd = `请按以下人格设定跟我对话，你就是${data.name}。以下是完整人格数据：\n\n${fullText}`;
+                  navigator.clipboard.writeText(cmd).then(() => { setCmdCopied(true); setTimeout(() => setCmdCopied(false), 2000); });
+                }}
+                className="shrink-0 px-3 py-2 rounded-lg bg-[#e17055] text-white text-xs font-semibold hover:bg-[#d0604a] transition-colors"
+              >
+                {cmdCopied ? "已复制 ✓" : "复制指令"}
+              </button>
+            </div>
+            <p className="text-[10px] text-[#b5afa7] mt-1.5">一键复制完整指令 + 人格数据，粘贴给豆包 / Kimi / ChatGPT 就能直接对话</p>
+          </div>
+
           {/* How to use */}
           <div className="px-6 py-4 bg-[#6c5ce7]/5 border-b border-[#6c5ce7]/10">
-            <p className="text-xs font-semibold text-[#6c5ce7] mb-2">怎么用？三步搞定</p>
+            <p className="text-xs font-semibold text-[#6c5ce7] mb-2">或者手动三步</p>
             <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[#6c5ce7]/80">
-              <span>① 复制上面的内容</span>
+              <span>① 复制上面的全部内容</span>
               <span>② 粘贴给豆包 / Kimi / ChatGPT / Claude</span>
               <span>③ 说「请按这个人格跟我对话」</span>
             </div>

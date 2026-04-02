@@ -16,6 +16,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [skillCopied, setSkillCopied] = useState(false);
+  const [cmdCopied, setCmdCopied] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -47,6 +48,13 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
       setSkillCopied(true); setTimeout(() => setSkillCopied(false), 2000);
     });
   }, [id]);
+
+  const handleCopyCmd = useCallback(() => {
+    if (!sessionInfo) return;
+    const personaFile = buildPersonaFile(sessionInfo.name, sessionInfo.persona, sessionInfo.description, sessionInfo.distillResult);
+    const cmd = `请按以下人格设定跟我对话，你就是${sessionInfo.name}。以下是完整人格数据：\n\n${personaFile}`;
+    navigator.clipboard.writeText(cmd).then(() => { setCmdCopied(true); setTimeout(() => setCmdCopied(false), 2000); });
+  }, [sessionInfo]);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -116,6 +124,10 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
           </h1>
         </div>
         <div className="flex items-center gap-1.5">
+          <button onClick={handleCopyCmd}
+            className="text-[11px] px-2.5 py-1 rounded-lg bg-[#e17055] text-white font-semibold hover:bg-[#d0604a] transition-colors">
+            {cmdCopied ? "已复制 ✓" : "📋 复制指令"}
+          </button>
           <button onClick={handleCopySkillLink}
             className="text-[11px] px-2.5 py-1 rounded-lg bg-[#6c5ce7]/10 text-[#6c5ce7] font-medium hover:bg-[#6c5ce7]/15 transition-colors">
             {skillCopied ? "已复制 ✓" : "🔗 Skill 链接"}
