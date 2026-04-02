@@ -54,47 +54,74 @@ function UploadPageInner() {
   const [chatText, setChatText] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingCount, setUploadingCount] = useState(0);
   const [error, setError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
+
+  const uploadSingleFile = useCallback(
+    async (file: File, idx: number) => {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "";
+
+      if (["txt", "csv", "md", "json"].includes(ext) && !file.type.startsWith("application/pdf")) {
+        const text = await file.text();
+        setChatText((prev) => (prev ? prev + "\n\n" + text : text));
+        setUploadedFiles((prev) => {
+          const updated = [...prev];
+          updated[idx] = { name: file.name, type: "text", chars: text.length, status: "done" };
+          return updated;
+        });
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("files", file);
+
+        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || "上传失败");
+
+        const f = data.files[0];
+        setUploadedFiles((prev) => {
+          const updated = [...prev];
+          updated[idx] = {
+            name: f.name,
+            type: f.type,
+            chars: f.chars,
+            error: f.error,
+            status: f.error ? "error" : "done",
+          };
+          return updated;
+        });
+
+        if (data.text) {
+          setChatText((prev) => (prev ? prev + "\n\n" + data.text : data.text));
+        }
+      } catch (err) {
+        setUploadedFiles((prev) => {
+          const updated = [...prev];
+          updated[idx] = {
+            ...updated[idx],
+            status: "error",
+            error: err instanceof Error ? err.message : "上传失败",
+          };
+          return updated;
+        });
+      }
+    },
+    []
+  );
 
   const handleFiles = useCallback(
     async (fileList: FileList | File[]) => {
       const files = Array.from(fileList);
       if (files.length === 0) return;
 
-      const textFiles: File[] = [];
-      const richFiles: File[] = [];
-
-      for (const f of files) {
-        const ext = f.name.split(".").pop()?.toLowerCase() || "";
-        if (["txt", "csv", "md", "json"].includes(ext) && f.type !== "application/pdf") {
-          textFiles.push(f);
-        } else {
-          richFiles.push(f);
-        }
-      }
-
-      if (textFiles.length > 0 && richFiles.length === 0) {
-        const texts = await Promise.all(textFiles.map((f) => f.text()));
-        const combined = texts.join("\n\n");
-        setChatText((prev) => (prev ? prev + "\n\n" + combined : combined));
-        setUploadedFiles((prev) => [
-          ...prev,
-          ...textFiles.map((f) => ({
-            name: f.name,
-            type: "text",
-            chars: 0,
-            status: "done" as const,
-          })),
-        ]);
-        return;
-      }
-
-      setUploading(true);
       setError("");
 
+      const startIdx = uploadedFiles.length;
       const placeholders: UploadedFile[] = files.map((f) => ({
         name: f.name,
         type: "unknown",
@@ -102,66 +129,20 @@ function UploadPageInner() {
         status: "uploading" as const,
       }));
       setUploadedFiles((prev) => [...prev, ...placeholders]);
+      setUploadingCount((c) => c + files.length);
 
-      try {
-        const formData = new FormData();
-        for (const f of files) {
-          formData.append("files", f);
-        }
+      const promises = files.map(async (file, i) => {
+        await uploadSingleFile(file, startIdx + i);
+        setUploadingCount((c) => c - 1);
+      });
 
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+      await Promise.allSettled(promises);
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "上传失败");
-
-        setUploadedFiles((prev) => {
-          const updated = [...prev];
-          const startIdx = updated.length - files.length;
-          for (let i = 0; i < data.files.length; i++) {
-            const f = data.files[i];
-            updated[startIdx + i] = {
-              name: f.name,
-              type: f.type,
-              chars: f.chars,
-              error: f.error,
-              status: f.error ? "error" : "done",
-            };
-          }
-          return updated;
-        });
-
-        if (data.text) {
-          setChatText((prev) => (prev ? prev + "\n\n" + data.text : data.text));
-        }
-
-        track("file_upload", {
-          meta: {
-            count: files.length,
-            types: data.files.map((f: { type: string }) => f.type),
-          },
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "上传失败");
-        setUploadedFiles((prev) => {
-          const updated = [...prev];
-          const startIdx = updated.length - files.length;
-          for (let i = 0; i < files.length; i++) {
-            updated[startIdx + i] = {
-              ...updated[startIdx + i],
-              status: "error",
-              error: "上传失败",
-            };
-          }
-          return updated;
-        });
-      } finally {
-        setUploading(false);
-      }
+      track("file_upload", {
+        meta: { count: files.length },
+      });
     },
-    []
+    [uploadedFiles.length, uploadSingleFile]
   );
 
   const handleDrop = useCallback(
@@ -216,7 +197,7 @@ function UploadPageInner() {
       docx: "📘 Word",
       image: "🖼️ 截图",
       error: "❌ 错误",
-      unknown: "⏳ 处理中",
+      unknown: "⏳ 识别中…",
     };
     return map[type] || type;
   };
@@ -333,11 +314,11 @@ function UploadPageInner() {
                   }
                 }}
               />
-              {uploading ? (
+              {uploadingCount > 0 ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-[#6c5ce7] border-t-transparent rounded-full animate-spin" />
                   <p className="text-sm text-[#6c5ce7] font-medium">
-                    正在解析文件…
+                    正在识别 {uploadingCount} 个文件…
                   </p>
                 </div>
               ) : (
@@ -375,7 +356,9 @@ function UploadPageInner() {
                     }`}
                   >
                     <span className="flex-1 truncate">
-                      <span className="font-medium">{fileTypeLabel(f.type)}</span>{" "}
+                      <span className="font-medium">
+                        {fileTypeLabel(f.type)}
+                      </span>{" "}
                       {f.name}
                       {f.status === "done" && f.chars > 0 && (
                         <span className="text-[#b5afa7] ml-1">
@@ -435,7 +418,7 @@ function UploadPageInner() {
 
           <button
             onClick={handleSubmit}
-            disabled={loading || uploading}
+            disabled={loading || uploadingCount > 0}
             className="btn-primary w-full py-3 text-sm
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           >
