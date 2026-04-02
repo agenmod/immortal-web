@@ -14,7 +14,7 @@
 
 - Next.js 16 (App Router)
 - Tailwind CSS 4
-- DeepSeek API
+- 火山引擎 Ark API (豆包 doubao-seed)
 - TypeScript
 
 ## 本地开发
@@ -22,7 +22,7 @@
 ```bash
 npm install
 cp .env.example .env.local
-# 编辑 .env.local 填入 DeepSeek API Key
+# 编辑 .env.local 填入火山引擎 Ark API Key
 npm run dev
 ```
 
@@ -32,7 +32,7 @@ npm run dev
 
 | 变量 | 说明 |
 |------|------|
-| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
+| `ARK_API_KEY` | 火山引擎 Ark API 密钥 |
 
 ## 部署
 

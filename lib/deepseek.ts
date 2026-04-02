@@ -1,8 +1,9 @@
-const DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions";
+const ARK_API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
+const ARK_MODEL = "doubao-seed-1-8-251228";
 
 function getApiKey(): string {
-  const key = process.env.DEEPSEEK_API_KEY;
-  if (!key) throw new Error("DEEPSEEK_API_KEY not set");
+  const key = process.env.ARK_API_KEY;
+  if (!key) throw new Error("ARK_API_KEY not set");
   return key;
 }
 
@@ -15,14 +16,14 @@ export async function chatCompletion(
   messages: ChatMessage[],
   options?: { temperature?: number; maxTokens?: number }
 ): Promise<string> {
-  const res = await fetch(DEEPSEEK_API_URL, {
+  const res = await fetch(ARK_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getApiKey()}`,
     },
     body: JSON.stringify({
-      model: "deepseek-chat",
+      model: ARK_MODEL,
       messages,
       temperature: options?.temperature ?? 0.7,
       max_tokens: options?.maxTokens ?? 4096,
@@ -31,7 +32,7 @@ export async function chatCompletion(
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`DeepSeek API error ${res.status}: ${err}`);
+    throw new Error(`Ark API error ${res.status}: ${err}`);
   }
 
   const data = await res.json();
@@ -41,14 +42,14 @@ export async function chatCompletion(
 export async function* chatCompletionStream(
   messages: ChatMessage[]
 ): AsyncGenerator<string> {
-  const res = await fetch(DEEPSEEK_API_URL, {
+  const res = await fetch(ARK_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getApiKey()}`,
     },
     body: JSON.stringify({
-      model: "deepseek-chat",
+      model: ARK_MODEL,
       messages,
       temperature: 0.7,
       max_tokens: 2048,
@@ -58,7 +59,7 @@ export async function* chatCompletionStream(
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`DeepSeek API error ${res.status}: ${err}`);
+    throw new Error(`Ark API error ${res.status}: ${err}`);
   }
 
   const reader = res.body?.getReader();
