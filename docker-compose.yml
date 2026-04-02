@@ -1,0 +1,14 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        - ARK_API_KEY=${ARK_API_KEY}
+        - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL:-https://admin.symbiotime.com}
+    container_name: immortal-web
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      - ARK_API_KEY=${ARK_API_KEY}
+      - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL:-https://admin.symbiotime.com}

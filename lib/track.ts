@@ -1,4 +1,4 @@
-const ANALYTICS_URL = process.env.NEXT_PUBLIC_ANALYTICS_URL || "https://symbiotime.com";
+const ANALYTICS_URL = process.env.NEXT_PUBLIC_ANALYTICS_URL || "https://admin.symbiotime.com";
 
 let sessionId: string | null = null;
 
