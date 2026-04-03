@@ -57,6 +57,14 @@ export async function GET(req: NextRequest) {
   });
 }
 
+const MAX_PROMPT_CHARS = 100_000;
+
+function truncateChatContent(content: string): string {
+  if (content.length <= MAX_PROMPT_CHARS) return content;
+  return content.slice(0, MAX_PROMPT_CHARS) +
+    `\n\n... (素材过长，已截取前 ${Math.round(MAX_PROMPT_CHARS / 1000)}K 字用于蒸馏)`;
+}
+
 async function runDistillation(sessionId: string) {
   const session = getSession(sessionId);
   if (!session) return;
@@ -64,11 +72,13 @@ async function runDistillation(sessionId: string) {
   updateSession(sessionId, { status: "distilling" });
 
   try {
+    const safeContent = truncateChatContent(session.chatContent);
+
     const prompt = buildDistillPrompt(
       session.name,
       session.persona,
       session.description,
-      session.chatContent
+      safeContent
     );
 
     const result = await chatCompletion(
@@ -76,7 +86,7 @@ async function runDistillation(sessionId: string) {
         { role: "system", content: "你是一个专业的人格蒸馏师。请严格按照要求输出蒸馏结果。" },
         { role: "user", content: prompt },
       ],
-      { temperature: 0.6, maxTokens: 4096 }
+      { temperature: 0.6, maxTokens: 8192 }
     );
 
     updateSession(sessionId, { status: "done", distillResult: result });

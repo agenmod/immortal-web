@@ -130,17 +130,21 @@ export function parseChat(text: string): ParseResult {
   return parsePlainChat(text);
 }
 
-export function formatForLLM(result: ParseResult, maxChars = 50000): string {
+export function formatForLLM(result: ParseResult, maxChars = 120000): string {
   let output = "";
+  let truncated = false;
   for (const msg of result.messages) {
     const line = msg.timestamp
       ? `[${msg.timestamp}] ${msg.sender}: ${msg.content}`
       : `${msg.sender}: ${msg.content}`;
     if (output.length + line.length > maxChars) {
-      output += "\n... (聊天记录过长，已截断)";
+      truncated = true;
       break;
     }
     output += line + "\n";
+  }
+  if (truncated) {
+    output += `\n... (聊天记录共 ${result.messageCount} 条，已截取前 ${Math.round(output.length / 1000)}K 字用于蒸馏)`;
   }
   return output;
 }

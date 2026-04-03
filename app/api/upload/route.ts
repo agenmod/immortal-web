@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { visionOCR } from "@/lib/deepseek";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_TEXT_PER_FILE = 200_000; // 200K chars per file max
 
 const IMAGE_TYPES = new Set([
   "image/jpeg",
@@ -96,7 +97,11 @@ export async function POST(req: NextRequest) {
           fileType = "text";
         }
 
-        results.push({ name: file.name, text: text.trim(), type: fileType });
+        let finalText = text.trim();
+        if (finalText.length > MAX_TEXT_PER_FILE) {
+          finalText = finalText.slice(0, MAX_TEXT_PER_FILE) + "\n\n... (文件内容过长，已截取前 200K 字)";
+        }
+        results.push({ name: file.name, text: finalText, type: fileType });
       } catch (err) {
         results.push({
           name: file.name,

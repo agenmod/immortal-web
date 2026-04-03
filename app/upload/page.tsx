@@ -18,6 +18,9 @@ const PERSONAS = [
 const ACCEPT_TYPES =
   ".txt,.csv,.json,.md,.pdf,.docx,.jpg,.jpeg,.png,.webp,.gif,.bmp";
 
+const MAX_SINGLE_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_TEXT_CHARS = 200_000; // ~200K 字符，约 100K token
+
 interface UploadedFile {
   name: string;
   type: string;
@@ -59,16 +62,42 @@ function UploadPageInner() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
+  const appendText = useCallback((newText: string) => {
+    setChatText((prev) => {
+      const combined = prev ? prev + "\n\n" + newText : newText;
+      if (combined.length > MAX_TEXT_CHARS) {
+        return combined.slice(0, MAX_TEXT_CHARS);
+      }
+      return combined;
+    });
+  }, []);
+
   const uploadSingleFile = useCallback(
     async (file: File, idx: number) => {
+      if (file.size > MAX_SINGLE_FILE_SIZE) {
+        setUploadedFiles((prev) => {
+          const updated = [...prev];
+          updated[idx] = {
+            name: file.name, type: "error", chars: 0, status: "error",
+            error: `文件过大 (${(file.size / 1024 / 1024).toFixed(1)}MB)，最大支持 20MB`,
+          };
+          return updated;
+        });
+        return;
+      }
+
       const ext = file.name.split(".").pop()?.toLowerCase() || "";
 
       if (["txt", "csv", "md", "json"].includes(ext) && !file.type.startsWith("application/pdf")) {
         const text = await file.text();
-        setChatText((prev) => (prev ? prev + "\n\n" + text : text));
+        const truncated = text.length > MAX_TEXT_CHARS ? text.slice(0, MAX_TEXT_CHARS) : text;
+        appendText(truncated);
         setUploadedFiles((prev) => {
           const updated = [...prev];
-          updated[idx] = { name: file.name, type: "text", chars: text.length, status: "done" };
+          updated[idx] = {
+            name: file.name, type: "text", chars: truncated.length, status: "done",
+            error: text.length > MAX_TEXT_CHARS ? `已截取前 ${(MAX_TEXT_CHARS / 1000).toFixed(0)}K 字` : undefined,
+          };
           return updated;
         });
         return;
@@ -97,7 +126,7 @@ function UploadPageInner() {
         });
 
         if (data.text) {
-          setChatText((prev) => (prev ? prev + "\n\n" + data.text : data.text));
+          appendText(data.text);
         }
       } catch (err) {
         setUploadedFiles((prev) => {
@@ -111,7 +140,7 @@ function UploadPageInner() {
         });
       }
     },
-    []
+    [appendText]
   );
 
   const handleFiles = useCallback(
@@ -405,9 +434,21 @@ function UploadPageInner() {
                            transition-all resize-y font-mono text-xs leading-relaxed"
               />
             </div>
-            <p className="text-xs text-[#b5afa7] mt-2">
-              💡 微信聊天记录可从「聊天记录迁移」导出 txt，或直接截图上传
-            </p>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs text-[#b5afa7]">
+                💡 微信聊天记录可从「聊天记录迁移」导出 txt，或直接截图上传
+              </p>
+              {chatText.length > 0 && (
+                <p className={`text-xs font-mono ${chatText.length >= MAX_TEXT_CHARS ? "text-[#e17055] font-semibold" : "text-[#b5afa7]"}`}>
+                  {(chatText.length / 1000).toFixed(0)}K / {(MAX_TEXT_CHARS / 1000).toFixed(0)}K 字
+                </p>
+              )}
+            </div>
+            {chatText.length >= MAX_TEXT_CHARS && (
+              <p className="text-xs text-[#e17055] mt-1">
+                已达素材上限，多余内容会被截断。当前素材量已足够蒸馏出高质量人格。
+              </p>
+            )}
           </div>
 
           {error && (
