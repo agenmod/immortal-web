@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, use } from "react";
 import Link from "next/link";
 import { addHistory, buildPersonaFile } from "@/lib/history";
 import { track } from "@/lib/track";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface Message { role: "user" | "assistant"; content: string; }
 interface SessionInfo { name: string; persona: string; description: string; distillResult: string; }
@@ -45,17 +46,16 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     track("download_md", { page: `/chat/${id}` });
   }, [sessionInfo, id]);
 
-  const handleCopySkillLink = useCallback(() => {
-    navigator.clipboard.writeText(`${window.location.origin}/skill/${id}`).then(() => {
-      setSkillCopied(true); setTimeout(() => setSkillCopied(false), 2000);
-    });
+  const handleCopySkillLink = useCallback(async () => {
+    const ok = await copyToClipboard(`${window.location.origin}/skill/${id}`);
+    if (ok) { setSkillCopied(true); setTimeout(() => setSkillCopied(false), 2000); }
   }, [id]);
 
-  const handleCopyCmd = useCallback(() => {
+  const handleCopyCmd = useCallback(async () => {
     if (!sessionInfo) return;
-    const personaFile = buildPersonaFile(sessionInfo.name, sessionInfo.persona, sessionInfo.description, sessionInfo.distillResult);
-    const cmd = `请按以下人格设定跟我对话，你就是${sessionInfo.name}。以下是完整人格数据：\n\n${personaFile}`;
-    navigator.clipboard.writeText(cmd).then(() => { setCmdCopied(true); setTimeout(() => setCmdCopied(false), 2000); });
+    const cmd = `请读取 ${window.location.origin}/api/skill?id=${id}&format=cmd 的内容，按其中的人格设定跟我对话`;
+    const ok = await copyToClipboard(cmd);
+    if (ok) { setCmdCopied(true); setTimeout(() => setCmdCopied(false), 2000); }
     track("copy_cmd", { page: `/chat/${id}` });
   }, [sessionInfo, id]);
 
@@ -103,7 +103,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } };
-  const handleShare = () => { navigator.clipboard.writeText(window.location.href).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); };
+  const handleShare = async () => { const ok = await copyToClipboard(window.location.href); if (ok) { setCopied(true); setTimeout(() => setCopied(false), 2000); } };
 
   if (error) {
     return (

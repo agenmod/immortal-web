@@ -118,15 +118,11 @@ export default function Home() {
             <div className="shrink-0 w-12 h-12 rounded-xl bg-[#e17055] flex items-center justify-center text-white text-xl">📋</div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-[#1a1a1a] mb-2">一行指令，发给别人直接用</h3>
-              <p className="text-sm text-[#8c8578] mb-4">蒸馏完成后，点击「复制指令」按钮，完整人格数据 + 使用指令一键复制。发给朋友，TA 粘贴给任何 AI 就能直接对话。</p>
-              <div className="rounded-xl bg-white border border-[#e8e4df] p-4 font-mono text-xs text-[#6b6560] leading-relaxed">
-                <span className="text-[#e17055] font-semibold">📋 复制指令</span>
-                <span className="text-[#c4beb6] mx-2">→</span>
-                粘贴给豆包 / Kimi / ChatGPT / Claude
-                <span className="text-[#c4beb6] mx-2">→</span>
-                <span className="text-[#6c5ce7] font-semibold">直接对话</span>
+              <p className="text-sm text-[#8c8578] mb-4">蒸馏完成后，一键复制一行指令。发给朋友，TA 粘贴给任何 AI 就能直接对话。</p>
+              <div className="rounded-xl bg-[#1a1a1a] p-4 font-mono text-xs leading-relaxed">
+                <span className="text-[#e17055]">请读取 https://symbiotime.com/api/skill?id=xxx&format=cmd 的内容，按其中的人格设定跟我对话</span>
               </div>
-              <p className="text-xs text-[#b5afa7] mt-3">无需下载文件、无需懂技术，一键搞定。也可以下载 .md 文件永久保存。</p>
+              <p className="text-xs text-[#b5afa7] mt-3">无需下载文件、无需懂技术，复制一行就搞定。</p>
             </div>
           </div>
         </div>
