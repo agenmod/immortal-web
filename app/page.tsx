@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { track } from "@/lib/track";
+import { copyToClipboard } from "@/lib/clipboard";
 
 const PERSONAS = [
   { key: "self", emoji: "🪞", label: "蒸自己", desc: "全维度数字分身" },
@@ -13,6 +14,48 @@ const PERSONAS = [
   { key: "friend", emoji: "🍻", label: "蒸朋友", desc: "最好笑的对话别丢了" },
   { key: "public-figure", emoji: "🌍", label: "蒸名人", desc: "仅限公开资料" },
 ];
+
+const SKILL_CMD = `请读取 https://symbiotime.com/skill.md 的内容，学会其中的七维蒸馏方法论，然后等我发聊天记录给你蒸馏`;
+
+function SkillCommandSection() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const ok = await copyToClipboard(SKILL_CMD);
+    if (ok) { setCopied(true); setTimeout(() => setCopied(false), 2000); }
+    track("copy_skill_cmd", { page: "/" });
+  };
+
+  return (
+    <section className="max-w-3xl mx-auto px-6 py-20">
+      <div className="rounded-2xl border border-[#e17055]/20 bg-[#e17055]/5 p-8 sm:p-10">
+        <div className="flex items-start gap-4 sm:gap-6">
+          <div className="shrink-0 w-12 h-12 rounded-xl bg-[#e17055] flex items-center justify-center text-white text-xl">🧬</div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-bold text-[#1a1a1a] mb-2">不想来网站？一行指令教会你的 AI 蒸馏</h3>
+            <p className="text-sm text-[#8c8578] mb-4">
+              复制下面这行发给豆包 / Kimi / ChatGPT，它就学会了七维蒸馏术。然后直接发聊天记录，在你自己的 AI 里就能蒸。
+            </p>
+            <div className="rounded-xl bg-[#1a1a1a] p-4 flex items-start gap-3">
+              <code className="flex-1 text-[#e17055] font-mono text-xs leading-relaxed break-all select-all">
+                {SKILL_CMD}
+              </code>
+              <button
+                onClick={handleCopy}
+                className="shrink-0 px-3 py-2 rounded-lg bg-[#e17055] text-white text-xs font-semibold hover:bg-[#d0604a] transition-colors"
+              >
+                {copied ? "已复制 ✓" : "复制"}
+              </button>
+            </div>
+            <p className="text-xs text-[#b5afa7] mt-3">
+              无需注册、无需来网站，你的 AI 直接变成蒸馏师。聊天记录全程留在你本地。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
   useEffect(() => { track("page_view", { page: "/" }); }, []);
@@ -111,22 +154,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* One-line command highlight */}
-      <section className="max-w-3xl mx-auto px-6 py-20">
-        <div className="rounded-2xl border border-[#e17055]/20 bg-[#e17055]/5 p-8 sm:p-10">
-          <div className="flex items-start gap-4 sm:gap-6">
-            <div className="shrink-0 w-12 h-12 rounded-xl bg-[#e17055] flex items-center justify-center text-white text-xl">📋</div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-[#1a1a1a] mb-2">一行指令，发给别人直接用</h3>
-              <p className="text-sm text-[#8c8578] mb-4">蒸馏完成后，一键复制一行指令。发给朋友，TA 粘贴给任何 AI 就能直接对话。</p>
-              <div className="rounded-xl bg-[#1a1a1a] p-4 font-mono text-xs leading-relaxed">
-                <span className="text-[#e17055]">请读取 https://symbiotime.com/api/skill?id=xxx&format=cmd 的内容，按其中的人格设定跟我对话</span>
-              </div>
-              <p className="text-xs text-[#b5afa7] mt-3">无需下载文件、无需懂技术，复制一行就搞定。</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* One-line skill command */}
+      <SkillCommandSection />
 
       {/* Persona selector */}
       <section className="max-w-3xl mx-auto px-6 pt-0 pb-20">
