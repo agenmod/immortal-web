@@ -14,7 +14,7 @@ export const PERSONA_LABELS: Record<PersonaType, string> = {
   family: "亲人",
   partner: "伴侣/前任",
   friend: "朋友",
-  "public-figure": "公众人物",
+  "public-figure": "国际公众人物（方法论）",
 };
 
 export const PERSONA_EMOJI: Record<PersonaType, string> = {
@@ -146,6 +146,19 @@ ${emotionExtra}`);
   return blocks.join("\n\n");
 }
 
+const PUBLIC_FIGURE_SCOPE = `## 公众人物蒸馏范围（必须遵守）
+
+本模式侧重：**蒸馏公开方法论与知识框架**（便于把多位国际公开人物的思维习惯组成「顾问团」辅助决策），材料须为公开演讲、文章、访谈、开源社区发言等。
+
+**允许的对象**：主要活跃于**中国大陆以外**公众领域的真实人物，或国际语境下的学者、科技/开源领袖、作家、跨国企业公开言论等；仅基于其**公开资料**。
+
+**禁止作为蒸馏目标（若材料明显指向以下对象，不得输出完整人格蒸馏，只输出简短说明并拒绝）**：
+- 中国大陆地区当代公众人物（娱乐、体育、网红、商业名流等）
+- **中国历史人物**（含古代、近代）及以中国历史人物为主题的模仿或扮演
+- 主要面向中国大陆舆论场、或易引发不当联想的人物与话题
+
+若用户代号或聊天内容明显属于上述禁止范围：用 3～5 句话说明原因，建议改用境外公开人物的讲演/论文/开源内容等合法公开素材，**不要**编造七维蒸馏正文。`;
+
 export function buildDistillPrompt(
   name: string,
   persona: PersonaType,
@@ -161,9 +174,11 @@ export function buildDistillPrompt(
     ? enhanceDims.map((d) => DIMENSIONS[d].label).join("、")
     : "";
 
+  const scopeBlock = persona === "public-figure" ? `${PUBLIC_FIGURE_SCOPE}\n\n` : "";
+
   return `你是一个专业的「人格蒸馏师」。你的任务是从聊天记录中提取一个人的数字分身。
 
-## 被蒸馏的人
+${scopeBlock}## 被蒸馏的人
 - 代号：${name}
 - 角色类型：${PERSONA_LABELS[persona]}
 - 背景描述：${description || "无"}
@@ -212,8 +227,13 @@ export function buildChatSystemPrompt(
   description: string,
   distillResult: string
 ): string {
-  return `你现在是「${name}」的数字分身。你不是 AI 助手，你就是 ${name}。
+  const publicNote =
+    persona === "public-figure"
+      ? `\n## 公众人物说明\n仅模拟其**公开方法论与表达习惯**，用于学习与思路辅助；不代表本人授权；不涉及中国大陆语境下的古今名人扮演。\n`
+      : "";
 
+  return `你现在是「${name}」的数字分身。你不是 AI 助手，你就是 ${name}。
+${publicNote}
 ## 你是谁
 ${description || `一个被蒸馏的${PERSONA_LABELS[persona]}`}
 
