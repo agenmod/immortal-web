@@ -1,12 +1,53 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
-import { listPublicPersonas } from "@/lib/public-personas";
+import { useEffect, useMemo } from "react";
+import { listPublicPersonas, type PublicPersonaDef } from "@/lib/public-personas";
 import { track } from "@/lib/track";
+
+function PersonaCard({ p }: { p: PublicPersonaDef }) {
+  const badge =
+    p.marketSection === "historical"
+      ? "历史形象 · 文献/史述"
+      : "国际 · 公开资料";
+  return (
+    <div className="card-lift rounded-2xl border border-[#e8e4df] bg-white p-6 shadow-sm flex flex-col">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <h2 className="text-xl font-bold text-[#1a1a1a]">{p.name}</h2>
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[#6c5ce7] bg-[#6c5ce7]/10 px-2 py-1 rounded-md">
+          {badge}
+        </span>
+      </div>
+      <p className="text-sm text-[#8c8578] leading-relaxed flex-1 mb-5">{p.tagline}</p>
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href={`/chat/${p.id}`}
+          className="btn-primary inline-flex items-center gap-1 px-4 py-2.5 text-sm"
+        >
+          在线对话
+        </Link>
+        <Link
+          href={`/skill/${p.id}`}
+          className="inline-flex items-center gap-1 px-4 py-2.5 rounded-xl bg-[#f0eeeb] border border-[#e8e4df] text-sm font-medium text-[#6b6560] hover:bg-[#e8e4df] transition-colors"
+        >
+          Skill 页
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function MarketPage() {
   const personas = listPublicPersonas();
+  const { contemporary, historical } = useMemo(() => {
+    const c: PublicPersonaDef[] = [];
+    const h: PublicPersonaDef[] = [];
+    for (const p of personas) {
+      if (p.marketSection === "historical") h.push(p);
+      else c.push(p);
+    }
+    return { contemporary: c, historical: h };
+  }, [personas]);
 
   useEffect(() => {
     track("page_view", { page: "/market" });
@@ -44,38 +85,33 @@ export default function MarketPage() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {personas.map((p) => (
-            <div
-              key={p.id}
-              className="card-lift rounded-2xl border border-[#e8e4df] bg-white p-6 shadow-sm flex flex-col"
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <h2 className="text-xl font-bold text-[#1a1a1a]">{p.name}</h2>
-                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[#6c5ce7] bg-[#6c5ce7]/10 px-2 py-1 rounded-md">
-                  国际 · 公开资料
-                </span>
-              </div>
-              <p className="text-sm text-[#8c8578] leading-relaxed flex-1 mb-5">
-                {p.tagline}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href={`/chat/${p.id}`}
-                  className="btn-primary inline-flex items-center gap-1 px-4 py-2.5 text-sm"
-                >
-                  在线对话
-                </Link>
-                <Link
-                  href={`/skill/${p.id}`}
-                  className="inline-flex items-center gap-1 px-4 py-2.5 rounded-xl bg-[#f0eeeb] border border-[#e8e4df] text-sm font-medium text-[#6b6560] hover:bg-[#e8e4df] transition-colors"
-                >
-                  Skill 页
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+        <section className="mb-12">
+          <h2 className="text-sm font-bold text-[#1a1a1a] mb-1 flex items-center gap-2">
+            <span className="w-1 h-4 rounded-full bg-[#e17055]" />
+            当代 · 公开言论与思想
+          </h2>
+          <p className="text-xs text-[#b5afa7] mb-4">投资、科技、科学传播等可核对公开材料</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {contemporary.map((p) => (
+              <PersonaCard key={p.id} p={p} />
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-4">
+          <h2 className="text-sm font-bold text-[#1a1a1a] mb-1 flex items-center gap-2">
+            <span className="w-1 h-4 rounded-full bg-[#6c5ce7]" />
+            古典至文艺复兴（非中国）
+          </h2>
+          <p className="text-xs text-[#b5afa7] mb-4">
+            哲学文本、科学史与罗马史述中的形象；多为二手记载，适合读史与思辨演练
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {historical.map((p) => (
+              <PersonaCard key={p.id} p={p} />
+            ))}
+          </div>
+        </section>
 
         <p className="mt-10 text-xs text-[#b5afa7] leading-relaxed">
           预制内容仅供学习与方法演练；不代表本人立场或授权。你也可以在
