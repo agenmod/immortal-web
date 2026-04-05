@@ -82,13 +82,19 @@ export default function Home() {
             与其等着被别人蒸，不如先蒸自己。不蒸馒头争口气！
           </p>
 
-          <div className="anim-fade anim-d4 mt-10 flex items-center justify-center gap-3">
+          <div className="anim-fade anim-d4 mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/upload"
               className="btn-primary inline-flex items-center gap-2 px-7 py-3.5 text-base"
             >
               开始蒸馏
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </Link>
+            <Link
+              href="/market"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white border border-[#e8e4df] text-[#6b6560] font-medium text-sm hover:border-[#6c5ce7]/30 hover:text-[#6c5ce7] transition-all"
+            >
+              公共人格市场
             </Link>
             <a
               href="https://github.com/agenmod/immortal-skill"
@@ -208,7 +214,8 @@ export default function Home() {
       <footer className="border-t border-[#e8e4df] py-8 px-6">
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-[#b5afa7]">
           <p>永生.skill — 开源数字永生蒸馏框架</p>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap gap-5">
+            <Link href="/market" className="hover:text-[#6b6560] transition-colors">公共人格市场</Link>
             <a href="https://github.com/agenmod/immortal-skill" target="_blank" rel="noopener noreferrer"
                className="hover:text-[#6b6560] transition-colors">Skill 框架</a>
             <a href="https://github.com/agenmod/immortal-web" target="_blank" rel="noopener noreferrer"

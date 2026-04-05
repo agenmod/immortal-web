@@ -151,7 +151,9 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
       {showBanner && sessionInfo && (
         <div className="flex items-center justify-between px-4 py-2 bg-[#6c5ce7]/5 border-b border-[#6c5ce7]/10 text-xs text-[#6c5ce7]">
           <span>
-            数据保留 7 天 · 建议
+            {id.startsWith("pub-")
+              ? "公共市场人格 · 建议"
+              : "数据保留 7 天 · 建议"}
             <button onClick={handleDownload} className="font-semibold mx-0.5 underline">下载人格包</button>
             或复制
             <button onClick={handleCopySkillLink} className="font-semibold mx-0.5 underline">Skill 链接</button>

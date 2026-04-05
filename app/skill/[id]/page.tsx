@@ -136,7 +136,9 @@ export default function SkillPage({ params }: { params: Promise<{ id: string }> 
         </div>
 
         <p className="text-xs text-[#b5afa7] mt-4 text-center">
-          此链接 7 天内有效 · 建议下载 .md 文件永久保存
+          {id.startsWith("pub-")
+            ? "公共市场预制人格 · 长期可用 · 建议下载 .md 备份"
+            : "此链接 7 天内有效 · 建议下载 .md 文件永久保存"}
         </p>
       </div>
     </main>

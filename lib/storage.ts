@@ -1,4 +1,5 @@
 import { PersonaType } from "./prompts";
+import { getPublicPersonaSession } from "./public-personas";
 
 export interface Session {
   id: string;
@@ -33,6 +34,8 @@ export function createSession(data: Omit<Session, "id" | "createdAt" | "status">
 }
 
 export function getSession(id: string): Session | undefined {
+  const pub = getPublicPersonaSession(id);
+  if (pub) return pub as Session;
   return store.get(id);
 }
 
