@@ -75,25 +75,27 @@ export default function MarketPage() {
           返回首页
         </Link>
 
-        <div className="mb-10">
+        <div className="mb-12 text-center">
           <p className="text-xs font-bold tracking-widest text-[#e17055] uppercase mb-2">
             公共人格市场
           </p>
           <h1 className="text-3xl sm:text-4xl font-black text-[#1a1a1a] tracking-tight">
             开箱即用的<span className="gradient-text">方法论人格</span>
           </h1>
-          <p className="mt-3 text-sm text-[#8c8578] leading-relaxed max-w-3xl">
+          <p className="mt-3 text-sm text-[#8c8578] leading-relaxed max-w-2xl mx-auto">
             基于公开讲演、访谈与史料整理的预制蒸馏结果，可直接对话或复制指令给其他
             AI。持续扩充中。
           </p>
         </div>
 
         <section className="mb-12">
-          <h2 className="text-sm font-bold text-[#1a1a1a] mb-1 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-[#1a1a1a] mb-1 flex items-center justify-center gap-2">
             <span className="w-1 h-4 rounded-full bg-[#e17055]" />
             当代 · 公开言论与思想
           </h2>
-          <p className="text-xs text-[#b5afa7] mb-5">投资、科技、科学传播等可核对公开材料</p>
+          <p className="text-xs text-[#b5afa7] mb-5 text-center">
+            投资、科技、科学传播等可核对公开材料
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5">
             {contemporary.map((p) => (
               <PersonaCard key={p.id} p={p} />
@@ -102,11 +104,11 @@ export default function MarketPage() {
         </section>
 
         <section className="mb-4">
-          <h2 className="text-sm font-bold text-[#1a1a1a] mb-1 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-[#1a1a1a] mb-1 flex items-center justify-center gap-2">
             <span className="w-1 h-4 rounded-full bg-[#6c5ce7]" />
             古典至文艺复兴（非中国）
           </h2>
-          <p className="text-xs text-[#b5afa7] mb-5">
+          <p className="text-xs text-[#b5afa7] mb-5 text-center">
             哲学文本、科学史与罗马史述中的形象；多为二手记载，适合读史与思辨演练
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5">
@@ -116,7 +118,7 @@ export default function MarketPage() {
           </div>
         </section>
 
-        <p className="mt-10 text-xs text-[#b5afa7] leading-relaxed">
+        <p className="mt-10 text-xs text-[#b5afa7] leading-relaxed text-center max-w-2xl mx-auto">
           预制内容仅供学习与方法演练；不代表本人立场或授权。你也可以在
           <Link href="/upload" className="text-[#6c5ce7] hover:underline mx-0.5">
             上传页
