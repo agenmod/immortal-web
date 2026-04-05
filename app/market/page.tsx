@@ -11,15 +11,21 @@ function PersonaCard({ p }: { p: PublicPersonaDef }) {
       ? "历史形象 · 文献/史述"
       : "国际 · 公开资料";
   return (
-    <div className="card-lift rounded-2xl border border-[#e8e4df] bg-white p-5 sm:p-6 shadow-sm flex flex-col h-full min-h-[200px]">
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <h2 className="text-xl font-bold text-[#1a1a1a]">{p.name}</h2>
-        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-[#6c5ce7] bg-[#6c5ce7]/10 px-2 py-1 rounded-md">
+    <div
+      className="rounded-2xl border border-[#e8e4df] bg-white p-5 sm:p-6 shadow-sm flex flex-col
+                 transition-shadow duration-200 hover:shadow-md hover:border-[#e0dcd6]
+                 overflow-hidden isolate min-w-0"
+    >
+      <div className="flex flex-col gap-2 mb-3 min-w-0">
+        <h2 className="text-lg sm:text-xl font-bold text-[#1a1a1a] leading-snug break-words">
+          {p.name}
+        </h2>
+        <span className="self-start text-[10px] font-semibold uppercase tracking-wide text-[#6c5ce7] bg-[#6c5ce7]/10 px-2 py-1 rounded-md leading-normal">
           {badge}
         </span>
       </div>
-      <p className="text-sm text-[#8c8578] leading-relaxed flex-1 mb-4">{p.tagline}</p>
-      <div className="flex flex-wrap gap-2 mt-auto pt-2">
+      <p className="text-sm text-[#8c8578] leading-relaxed mb-4 min-w-0">{p.tagline}</p>
+      <div className="flex flex-wrap gap-2">
         <Link
           href={`/chat/${p.id}`}
           className="btn-primary inline-flex items-center gap-1 px-4 py-2.5 text-sm"
@@ -96,7 +102,7 @@ export default function MarketPage() {
           <p className="text-xs text-[#b5afa7] mb-5 text-center">
             投资、科技、科学传播等可核对公开材料
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5 items-start">
             {contemporary.map((p) => (
               <PersonaCard key={p.id} p={p} />
             ))}
@@ -106,12 +112,12 @@ export default function MarketPage() {
         <section className="mb-4">
           <h2 className="text-sm font-bold text-[#1a1a1a] mb-1 flex items-center justify-center gap-2">
             <span className="w-1 h-4 rounded-full bg-[#6c5ce7]" />
-            古典至文艺复兴（非中国）
+            古典至文艺复兴
           </h2>
           <p className="text-xs text-[#b5afa7] mb-5 text-center">
             哲学文本、科学史与罗马史述中的形象；多为二手记载，适合读史与思辨演练
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-5 items-start">
             {historical.map((p) => (
               <PersonaCard key={p.id} p={p} />
             ))}
@@ -123,7 +129,7 @@ export default function MarketPage() {
           <Link href="/upload" className="text-[#6c5ce7] hover:underline mx-0.5">
             上传页
           </Link>
-          自己蒸馏新的公开人物。
+          自己尝试蒸馏。
         </p>
       </div>
     </main>
