@@ -281,8 +281,7 @@ function UploadPageInner() {
             {persona === "public-figure" && (
               <p className="mt-3 text-xs text-[#8c8578] leading-relaxed rounded-lg bg-[#f5f0eb] border border-[#e8e4df] px-3 py-2">
                 <span className="font-semibold text-[#1a1a1a]">国际名人 · 方法论向：</span>
-                侧重海外/国际公开人物的讲演、文章、开源言论，提炼知识框架；<span className="text-[#e17055]">不支持</span>
-                中国大陆当代名人及中国历史人物（含古代）。
+                请使用讲演、论文、访谈、开源社区等<strong>海外公开渠道</strong>的素材，提炼思维方式与表达框架；勿使用私人聊天或未授权内容。
               </p>
             )}
           </div>

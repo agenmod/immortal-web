@@ -12,7 +12,7 @@ const PERSONAS = [
   { key: "family", emoji: "👴", label: "蒸亲人", desc: "让唠叨不会消失" },
   { key: "partner", emoji: "💔", label: "蒸前任", desc: "你自己决定" },
   { key: "friend", emoji: "🍻", label: "蒸朋友", desc: "最好笑的对话别丢了" },
-  { key: "public-figure", emoji: "🌍", label: "国际名人", desc: "公开方法论 · 不含国内古今名人" },
+  { key: "public-figure", emoji: "🌍", label: "国际名人", desc: "公开方法论 · 海外公开资料" },
 ];
 
 const SKILL_CMD = `请读取 https://symbiotime.com/skill.md 的内容，学会其中的七维蒸馏方法论，然后等我发聊天记录给你蒸馏`;

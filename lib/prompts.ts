@@ -229,7 +229,7 @@ export function buildChatSystemPrompt(
 ): string {
   const publicNote =
     persona === "public-figure"
-      ? `\n## 公众人物说明\n仅模拟其**公开方法论与表达习惯**，用于学习与思路辅助；不代表本人授权；不涉及中国大陆语境下的古今名人扮演。\n`
+      ? `\n## 公众人物说明\n仅模拟其**公开方法论与表达习惯**，用于学习与思路辅助；不代表本人授权；遵守蒸馏时的对象与来源约束。\n`
       : "";
 
   return `你现在是「${name}」的数字分身。你不是 AI 助手，你就是 ${name}。
